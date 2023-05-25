@@ -7,21 +7,70 @@ Download Dataset 2 - https://drive.google.com/file/d/1-JIPCZ34dyN6k9CqJa-Y8yxIGq
 Note: both files are csv files. 
 
 
-1. Create a schema based on the given dataset
-2. Dump the data inside the hdfs in the given schema location.
-3. List of all agents' names. 
-4. Find out agent average rating.
-5. Total working days for each agents 
-6. Total query that each agent have taken 
-7. Total Feedback that each agent have received 
-8. Agent name who have average rating between 3.5 to 4 
-9. Agent name who have rating less than 3.5 
-10. Agent name who have rating more than 4.5 
-11. How many feedback agents have received more than 4.5 average
-12. average weekly response time for each agent 
-13. average weekly resolution time for each agents 
-14. Find the number of chat on which they have received a feedback 
-15. Total contribution hour for each and every agents weekly basis 
-16. Perform inner join, left join and right join based on the agent column and after joining the table export that data into your
+Q-1-Create a schema based on the given dataset
+A-1-
+
+Q-2-Dump the data inside the hdfs in the given schema location.
+A-2-
+
+Q-3-List of all agents' names. 
+A-3-
+
+Q-4-Find out agent average rating.
+A-4-
+
+Q-5-Total working days for each agents 
+A-5-
+
+Q-6-Total query that each agent have taken 
+A-6-
+
+Q-7-Total Feedback that each agent have received 
+A-7-
+
+Q-8-Agent name who have average rating between 3.5 to 4 
+A-8-
+
+Q-9-Agent name who have rating less than 3.5 
+A-9-
+
+Q-10- Agent name who have rating more than 4.5 
+A-10-
+
+Q-11-How many feedback agents have received more than 4.5 average
+A-11-
+
+Q-12-average weekly response time for each agent 
+A-12-
+
+Q-13-average weekly resolution time for each agents 
+A-13-
+
+Q-14-Find the number of chat on which they have received a feedback 
+A-14-
+
+Q-15-Total contribution hour for each and every agents weekly basis 
+A-15-
+
+Q-16-Perform inner join, left join and right join based on the agent column and after joining the table export that data into your
 local system.
-17. Perform partitioning on top of the agent column and then on top of that perform bucketing for each partitioning.
+A-16-
+
+
+Q-17-Perform partitioning on top of the agent column and then on top of that perform bucketing for each partitioning.
+A-17-
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
