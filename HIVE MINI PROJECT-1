@@ -9,56 +9,174 @@ Note: both files are csv files.
 
 Q-1-Create a schema based on the given dataset
 A-1-
+create database hive_db;
+use hive_db;
+create table agent_loging
+(
+s_no int,
+agent string,
+d_t date,
+login_time string,
+logout_time string,
+duration string
+)
+row format delimited
+fields terminated by ','
+tblproperties("skip.header.line.count"="1"); 
+
+create table agent_performance
+(
+s_no int,
+d_t date,
+agent_name string,
+total_chats int,
+average_response_time string,
+average_resolution_time string,
+average_rating float,
+total_feedback int
+)
+row format delimited
+fields terminated by ','
+tblproperties("skip.header.line.count"="1"); 
+
 
 Q-2-Dump the data inside the hdfs in the given schema location.
-A-2-
+A-2-hadoop fs -mkdir /input_data/
+hadoop fs -put AgentPerformance.csv /input_data
+hadoop fs -put AgentLogingReport.csv /input_data
+hadoop fs -ls /input_data
+load data inpath '/input_data/AgentPerformance.csv' into table AgentPerformance;
+load data inpath '/input_data/AgentLogingReport.csv' into table AgentLogingReport;
+set hive.cli.print.header = true;
+
 
 Q-3-List of all agents' names. 
 A-3-
+select distinct agent from agent_loging; 
+select distinct agent_name from agent_performance; 
+
+
 
 Q-4-Find out agent average rating.
 A-4-
+select agent_name as agent, avg(average_rating) as average_rating from agent_performance group by agent_name;
+
 
 Q-5-Total working days for each agents 
 A-5-
+select agent_name as agent, count(distinct date) as number_of_working_days from agent_performance group by agent_name; 
+
 
 Q-6-Total query that each agent have taken 
 A-6-
+select agent_name as agent, sum(total_chats) as queries_taken from agent_performance group by agent_name; 
+
 
 Q-7-Total Feedback that each agent have received 
 A-7-
+select agent_name as agent, sum(total_feedback) as feedbacks_received from agent_performance group by agent_name; 
 
 Q-8-Agent name who have average rating between 3.5 to 4 
 A-8-
+select agent_name,avg_rating from AgentPerformance where  avg_rating > 3.5 and avg_rating < 4;
+select distinct(agent_name) as Agent_name,avg_rating from AgentPerformance where  avg_rating > 3.5 and avg_rating < 4;
 
 Q-9-Agent name who have rating less than 3.5 
 A-9-
+select agent_name as agent, avg(average_rating) as average_rating from agent_performance group by agent_name having 
+average_rating < 3.5;
 
 Q-10- Agent name who have rating more than 4.5 
 A-10-
+select agent_name as agent, avg(average_rating) as average_rating from agent_performance group by agent_name having 
+average_rating > 4.5;
 
 Q-11-How many feedback agents have received more than 4.5 average
 A-11-
+select count(*) from(select agent_name as agent, avg(total_feedback) as average_feedback from agent_performance group by agent_name 
+having average_feedback > 4.5)t; 
+
 
 Q-12-average weekly response time for each agent 
 A-12-
+select agent, avg(weekly_response_time_in_sec) as avg_weekly_response_time_in_sec from (select week, agent, sum((time[0]*3600+
+time[1]*60+time[2])) as weekly_response_time_in_sec from(select agent_name as agent, weekofyear(date) as week, split
+(average_response_time,':') as time from agent_performance) t group by agent, week)s group by agent; 
+
 
 Q-13-average weekly resolution time for each agents 
 A-13-
+select agent, avg(weekly_resolution_time_in_sec) as avg_weekly_resolution_time_in_sec from (select week, agent, 
+sum((time[0]*3600+time[1]*60+time[2])) as weekly_resolution_time_in_sec from(select agent_name as agent, weekofyear(date) as 
+week, split(average_resolution_time,':') as time from agent_performance) t group by agent, week)s group by agent; 
+
 
 Q-14-Find the number of chat on which they have received a feedback 
 A-14-
+select agent_name as agent, sum(total_chats) as chats, sum(total_feedback) as chats_with_feedback_received from agent_performance
+group by agent_name; 
+
 
 Q-15-Total contribution hour for each and every agents weekly basis 
-A-15-
+A-15-select week, agent, sum((time[0]*3600+time[1]*60+time[2])/3600) as total_hrs_contributed from(select agent, weekofyear(date) as 
+week, split(duration,':') as time from agent_loging) t group by agent, week; 
+
 
 Q-16-Perform inner join, left join and right join based on the agent column and after joining the table export that data into your
 local system.
 A-16-
+Inner join:
+select l.*, p.*
+from
+agent_loging l
+inner join
+agent_performance p
+on l.agent = p.agent_name
+limit 5; 
+
+Left Join:
+select l.*, p.*
+from
+agent_loging l
+left join
+agent_performance p
+on l.agent = p.agent_name
+limit 5; 
+
+Right Join:
+select l.*, p.*
+from
+agent_loging l
+right join
+agent_performance p
+on l.agent = p.agent_name
+limit 3; 
+
+
 
 
 Q-17-Perform partitioning on top of the agent column and then on top of that perform bucketing for each partitioning.
 A-17-
+set hive.exec.dynamic.partition=true; 
+set hive.exec.dynamic.patition.mode=nonstrict; 
+create table partition_bucketed_loging
+(
+s_no int,
+d_t date,
+login_time string,
+logout_time string,
+duration string
+)
+partitioned by (agent string)
+clustered by(s_no)
+into 4 buckets
+row format delimited
+fields terminated by ','
+stored as textfile; 
+
+insert overwrite table partition_bucketed_loging partition(agent) select s_no, date, login_time,logout_time, duration, agent from 
+agent_loging; 
+
 
 
 
